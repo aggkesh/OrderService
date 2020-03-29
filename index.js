@@ -9,13 +9,11 @@ let orders = JSON.parse(rawdata);
 
 app.get('/order/:id', (req, res) => {
 	const userOrders = findOrderUser(req.params.id)
+	res.status(200)
 	res.send(userOrders)
 });
 
-app.use(express.static('public'))
-
-app.listen(port, () => console.log(`NAGP-quotes app listening on port ${port}!`))
-
+// Function used to find all orders for user with given userId 
 function findOrderUser(userId) {
 	const userIdJsonKey = 'userId'
 	const userOrders = []
@@ -24,10 +22,18 @@ function findOrderUser(userId) {
 		const order = orders[index]
 		if(order.hasOwnProperty(userIdJsonKey)) {
 			if(order[userIdJsonKey] == userId) {
-				userOrders.push(order)
+				userOrders.push({
+					"orderId": order['orderId'],
+					"orderAmout": order['orderAmount'],
+					"orderDate": order['orderDate']
+				})
 			}
 		}
 	}
 
 	return userOrders;
 }
+
+app.use(express.static('public'))
+
+app.listen(port, () => console.log(`Order-Service app listening on port ${port}!`))
